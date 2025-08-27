@@ -1,0 +1,37 @@
+# --- after models, anywhere before app.run(...) ---
+
+def init_db():
+    db.create_all()
+    # Seed a default admin on first run (idempotent)
+    if User.query.count() == 0:
+        import os
+        from werkzeug.security import generate_password_hash
+        default_user = os.environ.get("IPAM_ADMIN_USER", "admin")
+        default_pass = os.environ.get("IPAM_ADMIN_PASS", "admin")
+        u = User(username=default_user, is_admin=True)
+        u.password_hash = generate_password_hash(default_pass)
+        db.session.add(u)
+        db.session.commit()
+
+# Run once at startup inside an app context
+with app.app_context():
+    init_db()
+
+
+
+
+
+# init_db.py
+from app import app, db, User
+from werkzeug.security import generate_password_hash
+
+with app.app_context():
+    db.create_all()
+    if User.query.count() == 0:
+        u = User(username="admin", is_admin=True)
+        u.password_hash = generate_password_hash("ChangeMeNow!")
+        db.session.add(u)
+        db.session.commit()
+        print("Seeded default admin: admin / ChangeMeNow!")
+    else:
+        print("Tables already exist and users are present.")
