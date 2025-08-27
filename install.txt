@@ -1,0 +1,8 @@
+# Basic: create files only
+python install_ipam_web.py
+
+# Create venv + install deps
+python install_ipam_web.py --venv --install
+
+# Create venv, install, and run the app on http://localhost:5000
+python install_ipam_web.py --venv --install --run
